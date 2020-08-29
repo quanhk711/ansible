@@ -1,0 +1,31 @@
+---
+- hosts: host-1
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    #- name: install yum-utlis
+      #yum: 
+        #name: 
+         # - yum-utils
+         # - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+       # state: present
+        
+   # - name: Config version PHP
+   #   shell: yum-config-manager --enable remi-php72
+
+    - name: Config version PHP
+      yum:
+        name: ['php','php-common','php-opcache','php-mcrypt','php-cli','php-gd','php-curl','php-mysqlnd']
+        state: present
+
+    - name: Restart Apache
+      service:
+        name: httpd
+        state: restarted
+
+       
+
+...
+
+# php php-{mysqlnd,curl,gd,intl,pear,recode,ldap,xmlrpc,snmp,mbstring,gettext,gmp,json,xml,common}

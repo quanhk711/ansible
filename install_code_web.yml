@@ -1,0 +1,43 @@
+---
+- hosts: host-1
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: install rsync
+      yum: name=rsync state=latest
+
+    - name: create a new database thoitrang
+      mysql_db: name=thoitrang state=present login_user=root login_password=123
+
+    - name: copy file
+      copy: src=/root/thoitrangdb dest=/root
+
+    - name: create table called server with database  
+      shell: mysql -uroot -p123 thoitrang < /root/thoitrangdb
+
+    - name: copy file to /var/www/html
+      copy: src=/root/thoitrang.tar.gz dest=/root
+
+    - name: extract data wed
+      unarchive:
+        src: /root/thoitrang.tar.gz
+        dest: /root
+        remote_src: yes
+
+    - name: rsync data to /var/www/html
+      shell: rsync -avP /root/thoitrang/ /var/www/html/
+
+    - name: config file httpd.conf
+      shell: sed -i 's/DirectoryIndex index.html/DirectoryIndex index.html index.php/g' /etc/httpd/conf/httpd.conf
+
+    - name: config file configuration.php
+      shell: sed -i 's/123456/123/g' /var/www/html/configuration.php && sed -i 's/test/thoitrang/g' /var/www/html/configuration.php
+
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+    
+      
+

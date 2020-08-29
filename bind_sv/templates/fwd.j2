@@ -1,0 +1,15 @@
+@       IN  SOA     ns1.{{ domain }}. root.{{ domain }}. (
+                                                1001    ;Serial
+                                                3H      ;Refresh
+                                                15M     ;Retry
+                                                1W      ;Expire
+                                                1D      ;Minimum TTL
+                                                )
+
+;Name Server Information
+@      IN  NS      ns1.{{ domain }}.
+
+;IP address of Name Server
+ns1     IN  A       192.168.41.110
+
+www     IN  A       192.168.41.110

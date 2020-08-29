@@ -1,0 +1,65 @@
+---
+  - hosts: host-1
+    gather_facts: yes
+    become: yes
+
+    tasks:
+      - name: install mariadb rpm key
+        rpm_key:
+          key: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+          state: present
+        become: true
+
+      - name: Add repository mariadb
+        yum_repository:
+          name: Mariadb
+          description: mariadb repo
+          baseurl: http://yum.mariadb.org/10.5/centos7-amd64
+          gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+          gpgcheck: true
+          reposdir: /etc/yum.repos.d/
+          file: Mariadb
+        become: true
+
+      - name: reload repo
+        shell: yum repolist
+      
+      - name: install epel dev
+        yum: 
+          name: ['@Development tools', 'epel-release']
+          state: latest
+
+      - name: install the Python MySQLB module
+        yum: 
+          name: ['python', 'python-pip', 'python-setuptools', 'MySQL-python']
+          state: latest
+
+      - name: upgrade all packages
+        yum:
+          name: '*'
+          state: latest
+
+      - name: install mariadb
+        yum:
+          name: 
+            - mariadb-server
+          state: latest
+
+      - name: Ensure service enabled and started
+        service:
+          name: mariadb
+          state: started
+          enabled: True
+
+      - name: update root pass
+        mysql_user:
+          name: root
+          host: localhost
+          password: 123
+          login_user: root
+          check_implicit_admin: yes
+          priv: "*.*:ALL,GRANT"
+
+      
+...
+

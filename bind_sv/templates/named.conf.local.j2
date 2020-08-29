@@ -1,0 +1,11 @@
+zone "{{ domain }}" IN {
+type master;
+file "/var/zone/record/fwd.{{ domain }}";
+allow-update { none; };
+};
+
+zone "{{ rev_domain }}.in-addr.arpa" IN {
+type master;
+file "/var/zone/record/rev.{{ domain }}";
+allow-update { none; };
+};

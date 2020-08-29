@@ -1,0 +1,18 @@
+---
+- hosts: host-1
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Ensure service enabled and started
+      service:
+        name: httpd
+        state: started
+        enabled: True     
+
+...
