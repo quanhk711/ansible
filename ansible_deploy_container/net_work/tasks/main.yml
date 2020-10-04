@@ -1,0 +1,8 @@
+    - name: Create docker networks
+      docker_network:
+        name: "{{net_w}}"
+        driver: bridge
+        connected:
+          - "{{http_name}}"
+          - "{{mysql_name}}"
+          - "{{php_name}}"

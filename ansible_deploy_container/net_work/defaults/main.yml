@@ -1,0 +1,4 @@
+http_name: c-http
+mysql_name: c-mysql
+php_name: c-php
+net_w: inet1

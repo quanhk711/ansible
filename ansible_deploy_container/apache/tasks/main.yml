@@ -1,0 +1,19 @@
+    - name: copy file
+      copy:
+        src: httpd.conf
+        dest: /root/file
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: apache server in docker
+      docker_container:
+        name: "{{http_name}}"
+        hostname: "{{http_name}}"
+        detach: yes
+        image: httpd:"{{http_ver}}"
+        state: started
+        volumes: 
+          - /root/file/httpd.conf:/usr/local/apache2/conf/httpd.conf
+        ports:
+          - "{{http_port}}:80"

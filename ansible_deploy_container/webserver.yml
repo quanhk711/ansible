@@ -1,0 +1,99 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  remote_user: root
+#variable
+  vars:
+    MYSQL_ROOT_PASSWORD: quan
+    MYSQL_DATABASE: thoitrang
+    MYSQL_USER: test
+    MYSQL_PASSWORD: quan
+  tasks:
+
+#copy file
+    - name: create build directory
+      file:
+        path: "/root/{{item}}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      with_items: ["file", "data"]
+    
+    - name: copy file
+      copy:
+        src: ./{{item}}
+        dest: /root/file
+        owner: root
+        group: root
+        mode: '0644'
+      with_items: ["thoitrangdb", "docker", "my.cnf", "httpd.conf"]
+
+    - name: Unarchive file & copy file 2
+      unarchive:
+        src: ./thoitrang.tar.gz
+        dest: /root/file
+#app
+    - name: apache server in docker
+      docker_container:
+        name: c-http
+        detach: yes
+        image: httpd
+        state: started
+        hostname: c-http
+        volumes: 
+          - /root/file/thoitrang:/usr/local/apache2/htdocs/
+          - /root/file/httpd.conf:/usr/local/apache2/conf/httpd.conf
+        ports:
+          - "80:80"
+
+    - name: mysql server in docker
+      docker_container:
+        name: c-mysql
+        detach: yes
+        image: mysql
+        state: started
+        hostname: c-mysql
+        volumes: 
+          - /root/file/my.cnf:/etc/mysql/my.cnf
+          - /root/file/:/root
+          - /root/data:/var/lib/mysql
+        ports: 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: "{{MYSQL_ROOT_PASSWORD}}"
+          MYSQL_DATABASE: "{{MYSQL_DATABASE}}"
+          MYSQL_USER: "{{MYSQL_USER}}"
+          MYSQL_PASSWORD: "{{MYSQL_PASSWORD}}"
+
+    - name: Build Docker image from Dockerfile
+      docker_image: 
+        name: php-fpm-v
+        path: /root/file/docker
+        state: build
+
+    - name: Running the container php-fpm
+      docker_container:
+        image: php-fpm-v:latest
+        name: c-php
+        detach: yes
+        hostname: c-php
+        state: started
+        volumes: /root/file/thoitrang:/usr/local/apache2/htdocs/
+        ports: 9000:9000
+        env:
+          MYSQL_USER: "{{MYSQL_USER}}"
+          MYSQL_PASSWORD: "{{MYSQL_PASSWORD}}"
+
+#network
+    - name: Create docker networks
+      docker_network:
+        name: inet1
+        driver: bridge
+        connected:
+          - c-http
+          - c-mysql
+          - c-php
+
+
+...     

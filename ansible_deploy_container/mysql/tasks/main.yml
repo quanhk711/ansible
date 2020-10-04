@@ -1,0 +1,25 @@
+    - name: copy file
+      copy:
+        src: my.cnf
+        dest: /root/file
+        owner: root
+        group: root
+        mode: '0644'
+
+    
+    - name: mysql server in docker
+      docker_container:
+        name: "{{mysql_name}}"
+        hostname: "{{mysql_name}}"
+        detach: yes
+        image: mysql:"{{mysql_ver}}"
+        state: started
+        volumes: 
+          - /root/file/my.cnf:/etc/mysql/my.cnf
+        ports: 
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: "{{MYSQL_ROOT_PASSWORD}}"
+          MYSQL_DATABASE: "{{MYSQL_DATABASE}}"
+          MYSQL_USER: "{{MYSQL_USER}}"
+          MYSQL_PASSWORD: "{{MYSQL_PASSWORD}}"

@@ -1,0 +1,26 @@
+    - name: copy file
+      copy:
+        src: Dockerfile
+        dest: /root/file
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Build Docker image from Dockerfile
+      docker_image: 
+        name: php-fpm-v
+        path: /root/file/
+        state: build
+
+    - name: Running the container php-fpm
+      docker_container:
+        image: php-fpm-v:latest
+        name: "{{php_name}}"
+        detach: yes
+        hostname: "{{php_name}}"
+        state: started
+        ports: 
+          - 9000:9000
+        env:
+          MYSQL_USER: "{{MYSQL_USER}}"
+          MYSQL_PASSWORD: "{{MYSQL_PASSWORD}}"

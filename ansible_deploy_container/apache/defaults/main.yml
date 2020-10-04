@@ -1,0 +1,3 @@
+http_name: c-http
+http_ver: latest
+http_port: '80'

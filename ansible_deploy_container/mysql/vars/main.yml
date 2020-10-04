@@ -1,0 +1,6 @@
+mysql_name: c-mysql
+mysql_ver: latest 
+MYSQL_ROOT_PASSWORD: quan
+MYSQL_DATABASE: thoitrang
+MYSQL_USER: test
+MYSQL_PASSWORD: quan

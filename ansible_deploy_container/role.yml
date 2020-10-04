@@ -1,0 +1,12 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  remote_user: root
+  role:
+    - apache
+    - mysql
+    - php-fpm:5.6
+    - net_work
+
+...
