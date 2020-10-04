@@ -57,7 +57,7 @@
         hostname: c-mysql
         volumes: 
           - /root/file/my.cnf:/etc/mysql/my.cnf
-          - /root/file/:/root
+          - /root/file/:/docker-entrypoint-initdb.d
           - /root/data:/var/lib/mysql
         ports: 3306:3306
         env:
