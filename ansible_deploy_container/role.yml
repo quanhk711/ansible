@@ -1,5 +1,5 @@
----
-- hosts: all
+---all
+- hosts: 
   gather_facts: yes
   become: yes
   remote_user: root

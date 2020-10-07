@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  become: yes
+  remote_user: root
+  vars:
+    repo_folder: /root/git
+
+  tasks:
+    - git:
+        repo: git@github.com:quanhk711/dev-test-.git
+        dest: "{{ repo_folder }}"
+        update: yes
+        
+    - name: Build Docker image from Dockerfile
+      docker_image: 
+        name: myregistry.ddns.net/php-fpm
+        path: /root/git/php-fpm
+        state: build
+        tag: v1
+        push: yes
+
