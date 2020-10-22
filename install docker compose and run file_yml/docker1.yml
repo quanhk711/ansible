@@ -1,0 +1,52 @@
+- hosts: all
+  become: yes
+  gather_facts: false
+  var:
+    _path: 
+  
+  tasks:
+  - name: Check if Docker is installed
+    command: systemctl status docker
+    register: docker_check
+    ignore_errors: yes
+
+  - name: "Installing Docker Prerequisite packages"
+    yum:
+      name: ['yum-utils','device-mapper-persistent-data','lvm2','php-mcrypt','epel-release']
+      state: present
+
+  - name: Add Docker repo
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docer-ce.repo
+    become: yes
+
+  - name: Install Docker
+    package:
+      name: docker-ce
+      state: latest
+    become: yes
+
+  - name: Start Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+    become: yes
+
+  - name: Add remote "ansible" user to "docker" group
+    remote_user: ansible
+    user:
+      name: "ansible"
+      group: "docker"
+      append: yes
+
+  - name: Download and install Docker Compose
+    get_url:
+      url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
+      dest: /usr/bin/docker-compose
+      mode: 0755
+
+  - name: run docker-compose.yml
+    docker_compose:
+      project_src: "{{ _path }}"
